@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Typing Test</title>
+	<style>
+		body {
+			background-color: #333;
+			color: #ccc;
+			font-size: 24px;
+			font-family: Arial, sans-serif;
+			text-align: center;
+			margin-top: 100px;
+		}
+		input {
+			background-color: #333;
+			border: none;
+			border-bottom: 2px solid #ccc;
+			color: #ccc;
+			font-size: 24px;
+			font-family: Arial, sans-serif;
+			text-align: center;
+			margin-top: 20px;
+			padding: 10px;
+		}
+		button {
+			background-color: #ccc;
+			color: #333;
+			font-size: 24px;
+			font-family: Arial, sans-serif;
+			padding: 10px 20px;
+			border: none;
+			margin-top: 20px;
+		}
+		#leaderboard {
+			display: inline-block;
+			text-align: left;
+			vertical-align: top;
+			margin-top: 20px;
+		}
+		#leaderboard li {
+			margin: 10px 0;
+		}
+	</style>
+</head>
+<body>
+	<p>Type the following phrase:</p>
+	<p style="color: grey;">I am the fastest typer in the world</p>
+	<input type="text" id="input" onkeydown="startTimer()" onkeyup="stopTimer()">
+	<p id="wpm"></p>
+	<button onclick="reset()">Reset</button>
+	<button onclick="saveScore()">Send Score</button>
+	<div id="score-form" style="display:none">
+		<p>Please enter your name:</p>
+		<input type="text" id="name">
+		<button onclick="submitScore()">Submit</button>
+	</div>
+	<div id="leaderboard">
+		<h2>Leaderboard</h2>
+		<ul id="score-list"></ul>
+	</div>
+	<script>
+		let startTime, endTime;
+		let input = document.getElementById("input");
+		let wpm = document.getElementById("wpm");
+		let scoreForm = document.getElementById("score-form");
+		let nameInput = document.getElementById("name");
+		let scoreList = document.getElementById("score-list");
+		let scores = [];
+
+		function startTimer() {
+			if (!startTime) {
+				startTime = new Date();
+			}
+		}
+
+		function stopTimer() {
+			if (input.value == "I am the fastest typer in the world") {
+				endTime = new Date();
+				let timeDiff = endTime - startTime;
+				let seconds = timeDiff / 1000;
+				let minutes = seconds / 60;
+				let wordCount = 7;
+				let wpmValue = Math.round(wordCount / minutes);
+				wpm.innerHTML = "Your typing speed is " + wpmValue + " WPM";
+			}
+		}
+
+		function reset() {
+			startTime = null;
+			endTime = null;
+			input.value = "";
+			wpm.innerHTML = "";
+		}
+
+		function saveScore() {
+			scoreForm.style.display = "block";
+			nameInput.focus();
+		}
+
+		function submitScore() {
+			let name = nameInput.value;
+			let score = parseInt(wpm.innerText.match(/\d+/)[0]);
+			scores.push({ name: name, score: score });
+			scores.sort((a, b) => b.score - a.score);
+			renderLeaderboard();
+			resetScoreForm();
+		}
+
+		function renderLeaderboard() {
+			scoreList.innerHTML = "";
+			scores.forEach((score, index) => {
+				let listItem = document.createElement("li");
+				let text = document.createTextNode(`${index + 1}. ${score.name}: ${score.score} WPM`);
+				listItem.appendChild(text);
+				scoreList.appendChild(listItem);
+			});
+		}
+
+		function resetScoreForm() {
+			scoreForm.style.display = "none";
+			nameInput.value = "";
+		}
+	</script>
+</body>
+</html>
